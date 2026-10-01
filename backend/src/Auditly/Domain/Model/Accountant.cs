@@ -1,9 +1,11 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 
-namespace Domain.Model.Entities;
+namespace Domain.Model;
 
 public class Accountant
 {
+    [Key]
     public int Id { get; set; }
 
     // User idegen kulcs

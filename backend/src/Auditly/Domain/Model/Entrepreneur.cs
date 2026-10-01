@@ -1,11 +1,12 @@
-﻿using Domain.Model.Entities;
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace Domain.Model;
 
+
 public class Entrepreneur
 {
+    [Key]
     public int Id { get; set; }
 
     // User idegen kulcs
@@ -19,6 +20,7 @@ public class Entrepreneur
     public string TaxNumber { get; set; } = string.Empty;
 
     [Required]
+    
     public string Iban { get; set; } = string.Empty;
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

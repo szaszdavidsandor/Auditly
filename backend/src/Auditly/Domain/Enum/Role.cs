@@ -4,7 +4,10 @@ using System.Text;
 
 namespace Domain.Enum
 {
-    internal class Role
+    public enum Role
     {
+        Entrepreneur,
+        Accountant,
+        Admin
     }
 }
