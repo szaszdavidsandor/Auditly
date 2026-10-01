@@ -1,12 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Security.Principal;
 
-namespace Infrastructure.Repository
+namespace Infrastructure.Data
 {
-    internal class ConnectionDbContext : DbContext
+    public class ConnectionDbContext : DbContext
     {
         public ConnectionDbContext(DbContextOptions<ConnectionDbContext> options) : base(options)
         {
 
         }
+        
     }
 }
