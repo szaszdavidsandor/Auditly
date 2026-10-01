@@ -14,7 +14,8 @@ backend/
             UseCase/                # business logic(2FA, generate QR code, ect.)
         
         Infrastructure/             # infrastructure Layer (Database access, migrations, and other external services)
-            Repository/             # Database connection
+            Data/                   # Database connection & relations beetwen entities
+            Repository/             # Centralize common data acces functionality, providing better mainataability, decoupling the infrastructure or tchnology used to acces database from the domain layer(Database connection, queries for ORM)
             Migration/              # Database Migration files
             Authentication/         # jwt or session, ect.
 

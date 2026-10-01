@@ -1,3 +1,6 @@
+using Domain.Interface;
+using Infrastructure.Repository;
+using System.Reflection;
 using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,6 +10,15 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+// Traverse parent directories to ensure .env is found regardless of execution path
+DotNetEnv.Env.TraversePath().Load();
+
+// Load Infrastructure dynamically at runtime
+var infrastructureAssembly = Assembly.Load("Infrastructure");
+var type = infrastructureAssembly.GetType("Infrastructure.DependencyInjection");
+var method = type?.GetMethod("RegisterInfrastructure");
+method?.Invoke(null, new object[] { builder.Services, builder.Configuration });
 
 builder.Services.AddCors(options =>
 {
