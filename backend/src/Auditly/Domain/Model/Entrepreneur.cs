@@ -1,7 +1,8 @@
-﻿using System;
+﻿using Domain.Model.Entities;
+using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Domain.Model.Entities;
+namespace Domain.Model;
 
 public class Entrepreneur
 {
