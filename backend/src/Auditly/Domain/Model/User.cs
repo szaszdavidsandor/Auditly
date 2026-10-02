@@ -23,8 +23,6 @@ public class User
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? DeletedAt { get; set; }
-    6
-    6
 
     // Navigációs tulajdonságok az 1:1 kapcsolathoz
     //public Entrepreneur? Entrepreneur { get; set; }
