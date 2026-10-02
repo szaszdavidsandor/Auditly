@@ -67,6 +67,17 @@ namespace Infrastructure.Data
                       .HasForeignKey(e => e.SpecializationId)
                       .OnDelete(DeleteBehavior.SetNull);
             });
+
+            // ==========================================
+            // 5. USER <-> LOCATION (Cascade Delete)
+            // ==========================================
+            modelBuilder.Entity<User>(entity =>
+            {
+                entity.HasOne(u => u.Location)
+                      .WithMany()
+                      .HasForeignKey(u => u.LocationId)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
         }
     }
 }
