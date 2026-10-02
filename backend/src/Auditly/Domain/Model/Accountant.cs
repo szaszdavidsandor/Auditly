@@ -12,9 +12,13 @@ public class Accountant
     public int UserId { get; set; }
     public User User { get; set; } = null!;
 
+
+
     public string? CompanyName { get; set; }
     public string? RegistrationNumber { get; set; }
     public string? Phone { get; set; }
+
+
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
