@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Domain.Model
 {
-    internal class RefreshToken
+    public class RefreshToken
     {
         public int Id { get; set; }
 
@@ -26,4 +26,4 @@ namespace Domain.Model
         public User User { get; set; } = null!;
     }
 }
-}
+

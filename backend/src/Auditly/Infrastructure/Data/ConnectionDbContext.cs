@@ -114,6 +114,25 @@ namespace Infrastructure.Data
             }
             );
 
+
+
+            modelBuilder.Entity<RefreshToken>(entity =>
+            {
+                entity.HasOne(rt => rt.User)
+                      .WithMany()
+                      .HasForeignKey(rt => rt.UserId)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            // VerificationToken -> User kapcsolat (Kaskádolt törléssel)
+            modelBuilder.Entity<VerificationToken>(entity =>
+            {
+                entity.HasOne(vt => vt.User)
+                      .WithMany()
+                      .HasForeignKey(vt => vt.UserId)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
+
         }
     }
 }
