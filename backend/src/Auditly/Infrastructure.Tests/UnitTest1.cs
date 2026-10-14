@@ -13,7 +13,7 @@ public class RelationshipTests
 {
     private DbContextOptions<ConnectionDbContext> GetDbOptions()
     {
-        // 1. Célzott útvonalak keresése a .env fájlhoz
+        // Célzott útvonal keresés az env filehoz
         var currentDir = new DirectoryInfo(AppContext.BaseDirectory);
         string? envPath = null;
 
@@ -21,7 +21,7 @@ public class RelationshipTests
         {
             // Megnézzük a jelenlegi mappában
             var pathInCurrent = Path.Combine(currentDir.FullName, ".env");
-            // Megnézzük a testvér Infrastructure mappában is
+            // Infrastructure mappában is
             var pathInInfrastructure = Path.Combine(currentDir.FullName, "Infrastructure", ".env");
 
             if (File.Exists(pathInCurrent))
@@ -38,7 +38,7 @@ public class RelationshipTests
             currentDir = currentDir.Parent;
         }
 
-        // 2. Ha megtaláltuk a .env fájlt, betöltjük
+        // Ha megtalálja a .env fájlt, betöltjük
         if (envPath != null)
         {
             DotNetEnv.Env.Load(envPath);
@@ -48,7 +48,7 @@ public class RelationshipTests
             DotNetEnv.Env.TraversePath().Load();
         }
 
-        // 3. Változó beolvasása
+        // beolvasás
         var connectionString = Environment.GetEnvironmentVariable("DefaultConnection")
             ?? Environment.GetEnvironmentVariable("DEFAULT_CONNECTION")
             ?? Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");

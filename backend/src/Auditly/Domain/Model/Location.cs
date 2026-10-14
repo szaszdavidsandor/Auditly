@@ -6,7 +6,7 @@ namespace Domain.Model;
 
 public class Location
 {
-    [Key]
+    
     public int Id { get; set; }
 
     [Required]

@@ -6,14 +6,16 @@ namespace Domain.Model;
 
 public class User
 {
-    [Key]
+    
     public int Id { get; set; }
 
     [Required]
+    [MaxLength(50)]
     public string FullName { get; set; } = string.Empty;
 
     [Required]
     [EmailAddress]
+    [MaxLength(100)]
     public string Email { get; set; } = string.Empty;
 
     [Required]
@@ -36,7 +38,7 @@ public class User
 
 
 
-    // Navigációs tulajdonságok az 1:1 kapcsolathoz
+    // navigációs tulajdonságok 
     public Entrepreneur? Entrepreneur { get; set; }
     public Accountant? Accountant { get; set; }
 }

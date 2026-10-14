@@ -9,7 +9,6 @@
   <ItemGroup>
     <Folder Include="Interface\" />
     <Folder Include="Enum\" />
-	<Folder Include="Model\" />
   </ItemGroup>
 
 </Project>

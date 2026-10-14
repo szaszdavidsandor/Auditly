@@ -5,18 +5,24 @@ namespace Domain.Model;
 
 public class Accountant
 {
-    [Key]
+   
     public int Id { get; set; }
 
     // User idegen kulcs
     public int UserId { get; set; }
     public User User { get; set; } = null!;
 
+    [Required]
+    [MaxLength(200)]
+    public string CompanyName { get; set; }
 
+    [Required]
+    [MaxLength(14)]
+    public string RegistrationNumber { get; set; }
 
-    public string? CompanyName { get; set; }
-    public string? RegistrationNumber { get; set; }
-    public string? Phone { get; set; }
+    [Required]
+    [MaxLength(30)]
+    public string Phone { get; set; }
 
 
 

@@ -10,6 +10,7 @@ namespace Infrastructure.Data
         {
         }
 
+        
         public DbSet<User> Users { get; set; } = null!;
         public DbSet<Entrepreneur> Entrepreneurs { get; set; } = null!;
         public DbSet<Accountant> Accountants { get; set; } = null!;
@@ -66,6 +67,8 @@ namespace Infrastructure.Data
                       .WithMany(s => s.Entrepreneurs)
                       .HasForeignKey(e => e.SpecializationId)
                       .OnDelete(DeleteBehavior.SetNull);
+                      
+                      
             });
 
             // ==========================================
@@ -78,6 +81,39 @@ namespace Infrastructure.Data
                       .HasForeignKey(u => u.LocationId)
                       .OnDelete(DeleteBehavior.Cascade);
             });
+
+            // ==========================================
+            // 6. USER EMAIL UNIQUE
+            // ==========================================
+            modelBuilder.Entity<User>(entity =>
+            {
+                entity.HasIndex(u => u.Email).IsUnique();
+            });
+
+            // ==========================================
+            // 6. Entrepreneur unique kulcsok
+            // ==========================================
+            modelBuilder.Entity<Entrepreneur>(entity =>
+            {
+                entity.HasIndex(e => e.Iban).IsUnique();
+                entity.HasIndex(e => e.TaxNumber).IsUnique();
+                entity.HasIndex(e => e.CompanyName).IsUnique();
+                entity.HasIndex(e => e.Phone).IsUnique();
+            }
+            );
+
+            // ==========================================
+            // 6. Accountant unique kulcsok
+            // ==========================================
+            modelBuilder.Entity<Accountant>(entity =>
+            {
+                entity.HasIndex(e => e.CompanyName).IsUnique();
+                entity.HasIndex(e => e.Phone).IsUnique();
+                entity.HasIndex(e => e.RegistrationNumber).IsUnique();
+
+            }
+            );
+
         }
     }
 }

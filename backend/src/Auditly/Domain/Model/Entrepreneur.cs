@@ -6,19 +6,26 @@ namespace Domain.Model;
 
 public class Entrepreneur
 {
-    [Key]
+    
     public int Id { get; set; }
 
     // User idegen kulcs
     public int UserId { get; set; }
     public User User { get; set; } = null!;
 
-    
 
     [Required]
+    [MaxLength(30)]
+    public string Phone { get; set; }
+
+
+
+    [Required]
+    [MaxLength(100)]
     public string CompanyName { get; set; } = string.Empty;
 
     [Required]
+    [MaxLength(13)]
     public string TaxNumber { get; set; } = string.Empty;
 
     [Required]
