@@ -19,7 +19,11 @@ public class User
     public string Email { get; set; } = string.Empty;
 
     [Required]
-    public string PasswordHash { get; set; } = string.Empty;
+    public byte[] PasswordHash { get; set; } = new byte[0];
+
+    [Required]
+    public byte[] PasswordSalt { get; set; } = new byte[0];
+
 
     [Required]
     public Role Role { get; set; }  // 'Entrepreneur', 'Accountant', 'Admin'

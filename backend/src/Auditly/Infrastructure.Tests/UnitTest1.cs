@@ -13,15 +13,15 @@ public class RelationshipTests
 {
     private DbContextOptions<ConnectionDbContext> GetDbOptions()
     {
-        // Célzott útvonal keresés az env filehoz
+        
         var currentDir = new DirectoryInfo(AppContext.BaseDirectory);
         string? envPath = null;
 
         while (currentDir != null)
         {
-            // Megnézzük a jelenlegi mappában
+            
             var pathInCurrent = Path.Combine(currentDir.FullName, ".env");
-            // Infrastructure mappában is
+            
             var pathInInfrastructure = Path.Combine(currentDir.FullName, "Infrastructure", ".env");
 
             if (File.Exists(pathInCurrent))
@@ -38,7 +38,7 @@ public class RelationshipTests
             currentDir = currentDir.Parent;
         }
 
-        // Ha megtalálja a .env fájlt, betöltjük
+        
         if (envPath != null)
         {
             DotNetEnv.Env.Load(envPath);
@@ -87,7 +87,8 @@ public class RelationshipTests
         {
             FullName = "Teszt Elek",
             Email = "elek.teszt@auditly.hu",
-            PasswordHash = "hashedpassword123",
+            PasswordHash = new byte[] { 1, 2, 3, 4, 5 },
+            PasswordSalt = new byte[] { 6, 7, 8, 9, 10 },
             Role = Role.Entrepreneur,
             Location = location,
             Specialization = specialization
