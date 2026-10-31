@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Application.DTO.Request
 {
-    internal class RegisterAccountantRequest
+    internal class CreateAccountantRequest
     {
         public string Email { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
