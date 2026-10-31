@@ -38,7 +38,7 @@ namespace Infrastructure
             services.AddDbContext<ConnectionDbContext>(options =>
                 options.UseNpgsql(connectionString));
 
-            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+            services.AddScoped<IUserRepository, UserRepository>();
 
             return services;
         }
