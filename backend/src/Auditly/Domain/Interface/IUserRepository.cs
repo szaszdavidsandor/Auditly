@@ -19,6 +19,6 @@ namespace Domain.Interface
 
         Task<User> UpdateAsync(User entity);
 
-        Task<User> DeleteAsync(int id);
+        Task<User> SoftDeleteAsync(int id);
     }
 }

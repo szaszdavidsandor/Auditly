@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Application.DTO.Response
 {
-    internal class AuthResponse
+    public class AuthResponse
     {
         public bool Success { get; set; }
         public string Message { get; set; } = string.Empty;

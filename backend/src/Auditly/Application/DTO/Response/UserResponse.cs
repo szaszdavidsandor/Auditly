@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Application.DTO.Response
 {
-    public class UserResponseDto
+    public class UserResponse
     {
         public int Id { get; set; }
         public string FullName { get; set; } = string.Empty;

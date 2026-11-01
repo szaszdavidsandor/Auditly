@@ -4,8 +4,10 @@ using System.Text;
 
 namespace Application.DTO.Request
 {
-    internal class CreateEntrepreneurRequest
+    public class CreateEntrepreneurRequest
     {
+
+        public string FullName { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }
         public string CompanyName { get; set; }

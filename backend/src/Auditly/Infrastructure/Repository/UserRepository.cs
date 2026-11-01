@@ -60,7 +60,7 @@ namespace Infrastructure.Repository
             return entity;
         }
 
-        public async Task<User> DeleteAsync(int id)
+        public async Task<User> SoftDeleteAsync(int id)
         {
             var entity = await _dbSet.FindAsync(id);
             if (entity == null)

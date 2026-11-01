@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Application.DTO.Request
 {
-    internal class LoginRequest
+    public class LoginRequest
     {
         public string? FullName { get; set; }
         public string? Email { get; set; }

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Application.DTO.Request
 {
-    internal class UpdateEntrepreneurRequest
+    public class UpdateEntrepreneurRequest
     {
         public string? Email { get; set; }
         public string? Password { get; set; }
