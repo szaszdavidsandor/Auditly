@@ -37,7 +37,8 @@ namespace Application.Services
         public async Task<UserResponse?> GetUserByIdAsync(int id)
         {
             var user = await _userRepository.GetByIdAsync(id);
-            if (user is null) return null;
+            if (user is null) 
+                return null;
 
             return new UserResponse
             {
@@ -73,7 +74,8 @@ namespace Application.Services
         public async Task<bool> UpdateUserAsync(int id, UpdateUserRequest requestDto)
         {
             var user = await _userRepository.GetByIdAsync(id);
-            if (user is null) return false;
+            if (user is null) 
+                return false;
 
             user.FullName = requestDto.FullName;
             user.Email = requestDto.Email;
@@ -85,7 +87,8 @@ namespace Application.Services
         public async Task<bool> SoftDeleteUserAsync(int id)
         {
             var user = await _userRepository.GetByIdAsync(id);
-            if (user is null) return false;
+            if (user is null) 
+                return false;
 
             await _userRepository.SoftDeleteAsync(id);
             return true;
