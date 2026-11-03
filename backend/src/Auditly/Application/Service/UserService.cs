@@ -14,6 +14,8 @@ namespace Application.Services
     {
         private readonly IUserRepository _userRepository;
 
+        private readonly IPasswordHasher _passwordHasher;
+
         public UserService(
             IUserRepository userRepository)
         {
@@ -56,7 +58,8 @@ namespace Application.Services
             {
                 FullName = requestDto.FullName,
                 Email = requestDto.Email,
-                // PasswordHash = requestDto.Password // Hash-elnem kell még
+                PasswordHash = _passwordHasher.Hash(requestDto.Password).hash,
+                PasswordSalt = _passwordHasher.Hash(requestDto.Password).salt,
             };
 
             var createdUser = await _userRepository.AddAsync(user);
