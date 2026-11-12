@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "auditly-frontend",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "Frontend/src/Auditly", "start", "--", "--port", "4200"],
+      "port": 4200
+    }
+  ]
+}

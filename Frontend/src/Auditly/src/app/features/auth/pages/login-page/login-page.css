@@ -1,0 +1,25 @@
+:host {
+  display: block;
+}
+
+.login-page__container {
+  width: 100%;
+  max-width: 360px;
+  margin: auto;
+}
+
+.demo-badge {
+  position: fixed;
+  left: 50%;
+  bottom: 12px;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 4px 10px;
+  font-size: 10px;
+  color: var(--color-text-faint);
+  background: rgba(16, 26, 44, 0.75);
+  border: 1px dashed var(--color-surface-border);
+  border-radius: 999px;
+  white-space: nowrap;
+  pointer-events: none;
+}

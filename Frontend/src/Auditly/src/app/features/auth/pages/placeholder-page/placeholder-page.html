@@ -1,0 +1,20 @@
+<app-auth-background>
+  <section class="panel" aria-labelledby="placeholder-title">
+    <span class="panel__badge">Fejlesztés alatt</span>
+    <h1 id="placeholder-title" class="panel__title">{{ heading() }}</h1>
+    <p class="panel__text">{{ description() }}</p>
+
+    @if (showLogout() && session(); as s) {
+      <p class="panel__meta">Bejelentkezve: {{ s.email }}</p>
+      <button type="button" class="panel__action" (click)="logout()">
+        <app-icon name="log-out" [size]="15" />
+        Kijelentkezés
+      </button>
+    } @else {
+      <a class="panel__action" routerLink="/login">
+        <app-icon name="arrow-left" [size]="15" />
+        Vissza a bejelentkezéshez
+      </a>
+    }
+  </section>
+</app-auth-background>

@@ -1,0 +1,33 @@
+<div class="field">
+  <label class="field__label" [for]="fieldId()">{{ label() }}</label>
+
+  <div class="field__control" [class.field__control--invalid]="!!error()">
+    <app-icon class="field__icon" [name]="icon()" [size]="17" />
+    <input
+      #inputEl
+      class="field__input"
+      [id]="fieldId()"
+      [name]="fieldId()"
+      [type]="type()"
+      [value]="value()"
+      [placeholder]="placeholder()"
+      [disabled]="disabled()"
+      [attr.autocomplete]="autocomplete()"
+      [attr.inputmode]="inputMode()"
+      [attr.aria-invalid]="error() ? 'true' : null"
+      [attr.aria-describedby]="error() ? fieldId() + '-error' : null"
+      spellcheck="false"
+      autocapitalize="off"
+      (input)="onInput($event)"
+      (blur)="blurred.emit()"
+    />
+    <ng-content select="[fieldSuffix]" />
+  </div>
+
+  @if (error()) {
+    <p class="field__error" [id]="fieldId() + '-error'">
+      <app-icon name="alert" [size]="13" [strokeWidth]="2" />
+      <span>{{ error() }}</span>
+    </p>
+  }
+</div>

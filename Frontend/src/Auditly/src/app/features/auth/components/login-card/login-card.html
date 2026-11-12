@@ -1,0 +1,53 @@
+<section class="card" aria-labelledby="login-title">
+  <header class="card__header">
+    <div class="brand">
+      <app-icon class="brand__logo" name="layers" [size]="22" [strokeWidth]="2" />
+      <h1 id="login-title" class="brand__name">Auditly</h1>
+    </div>
+    <p class="card__subtitle">Könyvelői ügyfélportál</p>
+  </header>
+
+  <form class="form" novalidate (submit)="onSubmit($event)" [attr.aria-busy]="loading()">
+    <app-role-selector [(role)]="role" [disabled]="loading()" />
+
+    <app-input-field
+      fieldId="login-email"
+      label="Email cím"
+      type="email"
+      icon="mail"
+      autocomplete="username"
+      inputMode="email"
+      [placeholder]="emailPlaceholder"
+      [error]="emailError()"
+      [disabled]="loading()"
+      [(value)]="email"
+      (blurred)="emailTouched.set(true)"
+    />
+
+    <app-password-field
+      fieldId="login-password"
+      placeholder="••••••••••••"
+      autocomplete="current-password"
+      [error]="passwordError()"
+      [disabled]="loading()"
+      [(value)]="password"
+      (blurred)="passwordTouched.set(true)"
+    />
+
+    <div class="form__row">
+      <app-remember-me [(checked)]="rememberMe" [disabled]="loading()" />
+      <a class="form__link" routerLink="/forgot-password">Elfelejtett jelszó?</a>
+    </div>
+
+    @if (formError()) {
+      <p class="form__alert" role="alert">
+        <app-icon name="alert" [size]="15" [strokeWidth]="2" />
+        <span>{{ formError() }}</span>
+      </p>
+    }
+
+    <app-login-button [loading]="loading()" />
+  </form>
+
+  <app-login-footer class="card__footer" />
+</section>

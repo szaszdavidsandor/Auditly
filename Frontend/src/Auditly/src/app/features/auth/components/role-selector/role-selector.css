@@ -1,0 +1,103 @@
+:host {
+  display: block;
+}
+
+.roles {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.roles__legend {
+  padding: 0;
+  margin-bottom: 5px;
+  line-height: 1.3;
+  font-size: 10.5px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+.roles__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 13px;
+}
+
+.role {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+  height: 48px;
+  padding: 0 12px;
+  background: var(--color-option-bg);
+  border: 1px solid var(--color-input-border);
+  border-radius: var(--radius-control);
+  color: var(--color-text-faint);
+  cursor: pointer;
+  user-select: none;
+  transition:
+    border-color var(--transition-fast),
+    background-color var(--transition-fast),
+    color var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.role:hover {
+  border-color: var(--color-input-border-hover);
+  color: var(--color-text-secondary);
+}
+
+.role--active,
+.role--active:hover {
+  border-color: var(--color-primary);
+  box-shadow: inset 0 0 0 0.5px var(--color-primary);
+  color: var(--color-text);
+}
+
+.role--active .role__icon {
+  color: var(--color-primary-text);
+}
+
+.role:has(.role__input:focus-visible) {
+  outline: 2px solid var(--color-primary-text);
+  outline-offset: 2px;
+}
+
+.roles:disabled .role {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.role__label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 11.5px;
+  font-weight: 400;
+}
+
+.role--active .role__label {
+  font-weight: 600;
+}
+
+.role__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  opacity: 0;
+  transform: scale(0.4);
+  transition:
+    opacity var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.role--active .role__dot {
+  opacity: 1;
+  transform: scale(1);
+}
