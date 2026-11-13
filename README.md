@@ -40,9 +40,9 @@ Minden feladat alatt külön hozzászólási lehetőség érhető el, így a ké
 
 A szoftver a modern szoftverfejlesztési elvárásoknak megfelelően három különálló rétegre épül:
 
-- **Arató Ábel - Frontend:** Angular 19 (TypeScript, SCSS) - Interaktív, mobilbarát felhasználói felület.
-- **Szász Dávid - Backend:** C# .NET 9 Web API - Biztonságos REST API, JWT alapú hitelesítés, üzleti logika és jogosultságkezelés.
-- **Sánta Márk - Adatbázis & Storage:** PostgreSQL (Supabase Cloud) - Felhőben futó relációs adatbázis és fájltárhely a dokumentumok számára.
+- **Sánta Márk - Frontend:** Angular 19 (TypeScript, SCSS) - Interaktív, mobilbarát felhasználói felület.
+- **Szász Dávid Sándor - Backend:** C# .NET 9 Web API - Biztonságos REST API, JWT alapú hitelesítés, üzleti logika és jogosultságkezelés.
+- **Sánta Márk és Szász Dávid Sándor - Adatbázis & Storage:** PostgreSQL (Supabase Cloud) - Felhőben futó relációs adatbázis és fájltárhely a dokumentumok számára.
 
 ---
 
