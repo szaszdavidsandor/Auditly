@@ -12,11 +12,16 @@ builder.Services.AddOpenApi();
 // Traverse parent directories to ensure .env is found regardless of execution path
 DotNetEnv.Env.TraversePath().Load();
 
-// Load Infrastructure dynamically at runtime
+// Load Layers dynamically at runtime
 var infrastructureAssembly = Assembly.Load("Infrastructure");
-var type = infrastructureAssembly.GetType("Infrastructure.DependencyInjection");
-var method = type?.GetMethod("RegisterInfrastructure");
-method?.Invoke(null, new object[] { builder.Services, builder.Configuration });
+var infrastructuretype = infrastructureAssembly.GetType("Infrastructure.DependencyInjection");
+var infrastructuremethod = infrastructuretype?.GetMethod("RegisterInfrastructure");
+infrastructuremethod?.Invoke(null, new object[] { builder.Services, builder.Configuration });
+
+var applicationAssembly = Assembly.Load("Application");
+var applicationtype = applicationAssembly.GetType("Application.DependencyInjection");
+var applicationmethod = applicationtype?.GetMethod("RegisterApplication");
+applicationmethod?.Invoke(null, new object[] { builder.Services });
 
 builder.Services.AddCors(options =>
 {
