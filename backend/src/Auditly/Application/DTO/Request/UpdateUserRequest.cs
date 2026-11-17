@@ -9,9 +9,5 @@ namespace Application.DTO.Request
         public string? FullName { get; set; }
         public string? Email { get; set; }
         public string? Password { get; set; }
-        public string? CompanyName { get; set; }
-        public string? TaxNumber { get; set; }
-        public string? Iban { get; set; }
-        public string? Phone { get; set; }
     }
 }

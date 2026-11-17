@@ -13,7 +13,6 @@ namespace Application.Services
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
-
         private readonly IPasswordHasher _passwordHasher;
 
         public UserService(IUserRepository userRepository, IPasswordHasher passwordHasher)
@@ -80,8 +79,18 @@ namespace Application.Services
             if (user is null) 
                 return false;
 
-            user.FullName = requestDto.FullName;
-            user.Email = requestDto.Email;
+            if(!string.IsNullOrEmpty(requestDto.FullName))
+                user.FullName = requestDto.FullName;
+
+            if (!string.IsNullOrEmpty(requestDto.Email))
+                user.Email = requestDto.Email;
+
+            if (!string.IsNullOrEmpty(requestDto.Password))
+            {
+                var passwordResult = _passwordHasher.Hash(requestDto.Password);
+                user.PasswordHash = passwordResult.hash;
+                user.PasswordSalt = passwordResult.salt;
+            }
 
             await _userRepository.UpdateAsync(user);
             return true;
