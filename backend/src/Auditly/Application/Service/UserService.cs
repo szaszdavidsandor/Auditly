@@ -16,10 +16,10 @@ namespace Application.Services
 
         private readonly IPasswordHasher _passwordHasher;
 
-        public UserService(
-            IUserRepository userRepository)
+        public UserService(IUserRepository userRepository, IPasswordHasher passwordHasher)
         {
             _userRepository = userRepository;
+            _passwordHasher = passwordHasher;
         }
 
         public async Task<IEnumerable<UserResponse>> GetAllUsersAsync()

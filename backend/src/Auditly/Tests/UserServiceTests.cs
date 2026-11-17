@@ -1,8 +1,10 @@
-﻿using Application.DTO.Response;
+﻿using Application.DTO.Request;
+using Application.DTO.Response;
 using Application.Services;
 using Domain.Enum;
 using Domain.Interface;
 using Domain.Model;
+using Infrastructure.Security;
 using NSubstitute;
 
 namespace Tests
@@ -15,7 +17,8 @@ namespace Tests
         {
             //  Arrange
             var userRepository = Substitute.For<IUserRepository>();
-            var userService = new UserService(userRepository);
+            var passwordHasher = Substitute.For<IPasswordHasher>();
+            var userService = new UserService(userRepository, passwordHasher);
 
             User user = new User
             {
@@ -80,7 +83,8 @@ namespace Tests
         {
             //  Arrange
             var userRepository = Substitute.For<IUserRepository>();
-            var userService = new UserService(userRepository);
+            var passwordHasher = Substitute.For<IPasswordHasher>();
+            var userService = new UserService(userRepository, passwordHasher);
 
             User user = new User
             {
@@ -121,17 +125,69 @@ namespace Tests
         [Fact]
         public async Task GetUserByIdAsync_WhenUserNotFound_ReturnsNull()
         {
+            //  Arrange
             var userRepository = Substitute.For<IUserRepository>();
-            var userService = new UserService(userRepository);
+            var passwordHasher = Substitute.For<IPasswordHasher>();
+            var userService = new UserService(userRepository, passwordHasher);
 
             int userId = 99;
-
+    
+            //Act
             userRepository.GetByIdAsync(userId).Returns((User?)null);
 
             var userServiceResult = await userService.GetUserByIdAsync(userId);
 
+            //Assert
             Assert.Null(userServiceResult);
         }
 
+        [Fact]
+        public async Task CreateUserAsync_WithValidCreateUserRequest_ReturnsUserResponse()
+        {
+            //Arrange
+            var userRepository = Substitute.For<IUserRepository>();
+            var passwordHasher = Substitute.For<IPasswordHasher>();
+            var userService = new UserService(userRepository, passwordHasher);
+
+            var requestDto = new CreateUserRequest
+            {
+                FullName = "testuser",
+                Email = "testuser@example.com",
+                Password = "Password123!"
+            };
+
+            var expectedHash = new byte[] { 0x2d, 0x74, 0x15, 0x89 };
+            var expectedSalt = new byte[] { 0xaa, 0xbb, 0xcc, 0xdd };
+
+
+            var createdUser = new User
+            {
+                Id = 1,
+                FullName = requestDto.FullName,
+                Email = requestDto.Email,
+                PasswordHash = expectedHash,
+                PasswordSalt = expectedSalt,
+                Role = Role.Entrepreneur,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            //Act
+            passwordHasher.Hash(requestDto.Password).Returns((expectedHash, expectedSalt));
+
+            userRepository.AddAsync(Arg.Any<User>()).Returns(createdUser);
+
+            var result = await userService.CreateUserAsync(requestDto);
+
+            //Assert
+            Assert.NotNull(result);
+
+            Assert.IsType<UserResponse>(result);
+
+            Assert.Equal(createdUser.Id, result.Id);
+            Assert.Equal(createdUser.FullName, result.FullName);
+            Assert.Equal(createdUser.Email, result.Email);
+            Assert.Equal(createdUser.Role, result.Role);
+            Assert.Equal(createdUser.CreatedAt, result.CreatedAt);
+        }
     }
 }

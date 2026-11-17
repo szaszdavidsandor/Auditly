@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Application.DTO;
+﻿using Application.DTO;
 using Application.DTO.Request;
 using Application.DTO.Response;
+using Domain.Interface;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Application.Interface
 {
