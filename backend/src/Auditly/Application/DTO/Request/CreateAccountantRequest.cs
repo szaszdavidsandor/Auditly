@@ -1,16 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Application.DTO.Request
 {
     public class CreateAccountantRequest
     {
+        [Required]
+        [MaxLength(50)]
         public string FullName { get; set; }
+
+        [Required]
+        [EmailAddress]
+        [MaxLength(100)]
         public string Email { get; set; }
+
+        [Required]
+        [MaxLength(100)]
         public string Password { get; set; }
+
+        [Required]
+        [MaxLength(200)]
         public string CompanyName { get; set; }
+
+        [Required]
+        [MaxLength(14)]
         public string RegistrationNumber { get; set; }
+
+        [Required]
+        [MaxLength(30)]
         public string Phone { get; set; }
     }
 }
