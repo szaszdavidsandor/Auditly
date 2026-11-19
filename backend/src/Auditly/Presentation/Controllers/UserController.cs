@@ -45,7 +45,7 @@ namespace WebApi.Controllers
         public async Task<IActionResult> UpdateUser(int id, [FromBody] UpdateUserRequest requestDto)
         {
             var result = await _userService.UpdateUserAsync(id, requestDto);
-            if (!result)
+            if (result is null)
             {
                 return NotFound();
             }
@@ -56,7 +56,7 @@ namespace WebApi.Controllers
         public async Task<IActionResult> SoftDeleteUser(int id)
         {
             var result = await _userService.SoftDeleteUserAsync(id);
-            if (!result)
+            if (result is false)
             {
                 return NotFound();
             }

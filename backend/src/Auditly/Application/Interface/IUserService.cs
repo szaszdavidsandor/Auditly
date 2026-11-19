@@ -12,7 +12,7 @@ namespace Application.Interface
         Task<IEnumerable<UserResponse?>> GetAllUsersAsync();
         Task<UserResponse?> GetUserByIdAsync(int id);
         Task<UserResponse?> CreateUserAsync(CreateUserRequest requestDto);
-        Task<bool> UpdateUserAsync(int id, UpdateUserRequest requestDto);
+        Task<UserResponse?> UpdateUserAsync(int id, UpdateUserRequest requestDto);
         Task<bool> SoftDeleteUserAsync(int id);
     }
 }

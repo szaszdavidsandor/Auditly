@@ -13,12 +13,12 @@ namespace Domain.Interface
 
         Task<User?> GetByUsernameOrEmailAsync(string username, string email);
 
-        IQueryable<User> GetQueryable();
+        IQueryable<User?> GetQueryable();
 
-        Task<User> AddAsync(User entity);
+        Task<User?> AddAsync(User entity);
 
-        Task<User> UpdateAsync(User entity);
+        Task<User?> UpdateAsync(User entity);
 
-        Task<User> SoftDeleteAsync(int id);
+        Task<bool> SoftDeleteAsync(int id);
     }
 }

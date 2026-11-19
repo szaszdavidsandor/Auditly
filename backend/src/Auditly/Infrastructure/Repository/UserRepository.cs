@@ -41,26 +41,26 @@ namespace Infrastructure.Repository
             return user;
         }
 
-        public IQueryable<User> GetQueryable()
+        public IQueryable<User?> GetQueryable()
         {
             return _dbSet.AsQueryable();
         }
 
-        public async Task<User> AddAsync(User entity)
+        public async Task<User?> AddAsync(User entity)
         {
             await _dbSet.AddAsync(entity);
             await _context.SaveChangesAsync();
             return entity;
         }
 
-        public async Task<User> UpdateAsync(User entity)
+        public async Task<User?> UpdateAsync(User entity)
         {
             _dbSet.Update(entity);
             await _context.SaveChangesAsync();
             return entity;
         }
 
-        public async Task<User> SoftDeleteAsync(int id)
+        public async Task<bool> SoftDeleteAsync(int id)
         {
             var entity = await _dbSet.FindAsync(id);
             if (entity == null)
@@ -68,7 +68,7 @@ namespace Infrastructure.Repository
 
             _dbSet.Remove(entity);
             await _context.SaveChangesAsync();
-            return entity;
+            return true;
         }
     }
 }

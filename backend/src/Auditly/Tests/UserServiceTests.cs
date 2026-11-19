@@ -6,6 +6,7 @@ using Domain.Interface;
 using Domain.Model;
 using Infrastructure.Security;
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 
 namespace Tests
 {
@@ -132,19 +133,19 @@ namespace Tests
 
             int userId = 99;
     
-            //Act
+            //  Act
             userRepository.GetByIdAsync(userId).Returns((User?)null);
 
             var userServiceResult = await userService.GetUserByIdAsync(userId);
 
-            //Assert
+            //  Assert
             Assert.Null(userServiceResult);
         }
 
         [Fact]
         public async Task CreateUserAsync_WithValidCreateUserRequest_ReturnsUserResponse()
         {
-            //Arrange
+            //  Arrange
             var userRepository = Substitute.For<IUserRepository>();
             var passwordHasher = Substitute.For<IPasswordHasher>();
             var userService = new UserService(userRepository, passwordHasher);
@@ -171,14 +172,14 @@ namespace Tests
                 CreatedAt = DateTime.UtcNow
             };
 
-            //Act
+            //  Act
             passwordHasher.Hash(requestDto.Password).Returns((expectedHash, expectedSalt));
 
             userRepository.AddAsync(Arg.Any<User>()).Returns(createdUser);
 
             var result = await userService.CreateUserAsync(requestDto);
 
-            //Assert
+            //  Assert
             Assert.NotNull(result);
 
             Assert.IsType<UserResponse>(result);
@@ -188,6 +189,456 @@ namespace Tests
             Assert.Equal(createdUser.Email, result.Email);
             Assert.Equal(createdUser.Role, result.Role);
             Assert.Equal(createdUser.CreatedAt, result.CreatedAt);
+        }
+
+        [Fact]
+        public async Task UpdateUserAsync_WithValidIdAndRequest_ReturnsUserResponse()
+        {
+            // Arrange
+            var userRepository = Substitute.For<IUserRepository>();
+            var passwordHasher = Substitute.For<IPasswordHasher>();
+            var userService = new UserService(userRepository, passwordHasher);
+
+            int userId = 1;
+            var previousUser = new User
+            {
+                Id = userId,
+                FullName = "oldname",
+                Email = "old@example.com",
+                PasswordHash = new byte[] { 0x01 },
+                PasswordSalt = new byte[] { 0x02 },
+                Role = Role.Entrepreneur,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            var existingUser = new User
+            {
+                Id = userId,
+                FullName = "oldname",
+                Email = "old@example.com",
+                PasswordHash = new byte[] { 0x01 },
+                PasswordSalt = new byte[] { 0x02 },
+                Role = Role.Entrepreneur,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            var requestDto = new UpdateUserRequest
+            {
+                FullName = "newname",
+                Email = "new@example.com",
+                Password = "NewPassword123!"
+            };
+
+            var expectedUser = new User
+            {
+                Id = userId,
+                FullName = requestDto.FullName,
+                Email = requestDto.Email,
+                PasswordHash = new byte[] { 0x03 },
+                PasswordSalt = new byte[] { 0x04 },
+                Role = existingUser.Role,
+                CreatedAt = existingUser.CreatedAt
+            };
+
+            // Act
+            userRepository.GetByIdAsync(userId).Returns(existingUser);
+
+            passwordHasher.Hash(requestDto.Password).Returns((expectedUser.PasswordHash, expectedUser.PasswordSalt));
+
+            userRepository.UpdateAsync(Arg.Any<User>()).Returns(expectedUser);
+
+            var result = await userService.UpdateUserAsync(userId, requestDto);
+
+            // Assert
+            await userRepository.Received(1).GetByIdAsync(Arg.Any<int>());
+
+            passwordHasher.Received(1).Hash(Arg.Any<string>());
+
+            await userRepository.Received(1).UpdateAsync(Arg.Any<User>());
+
+            Assert.IsType<UserResponse>(result);
+
+            Assert.Equal(requestDto.FullName, result.FullName);
+            Assert.Equal(requestDto.Email, result.Email);
+            Assert.NotEqual(previousUser.FullName, result.FullName);
+            Assert.NotEqual(previousUser.Email, result.Email);
+            Assert.Equal(previousUser.Role, result.Role);
+            Assert.Equal(existingUser.CreatedAt, result.CreatedAt);
+        }
+
+        [Fact]
+        public async Task UpdateUserAsync_WhenUserNotFound_ReturnsNull()
+        {
+            // Arrange
+            var userRepository = Substitute.For<IUserRepository>();
+            var passwordHasher = Substitute.For<IPasswordHasher>();
+            var userService = new UserService(userRepository, passwordHasher);
+
+            int userId = 99;
+            var requestDto = new UpdateUserRequest
+            {
+                FullName = "newname",
+                Email = "new@example.com",
+                Password = "NewPassword123!"
+            };
+
+            // Act
+            
+            userRepository.GetByIdAsync(userId).Returns((User?)null);
+
+            var result = await userService.UpdateUserAsync(userId, requestDto);
+
+            // Assert
+            await userRepository.Received(1).GetByIdAsync(Arg.Any<int>());
+
+            passwordHasher.DidNotReceive().Hash(Arg.Any<string>());
+
+            await userRepository.DidNotReceive().UpdateAsync(Arg.Any<User>());
+
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public async Task UpdateUserAsync_WhenNoValuesProvided_ReturnsNull()
+        {
+            // Arrange
+            var userRepository = Substitute.For<IUserRepository>();
+            var passwordHasher = Substitute.For<IPasswordHasher>();
+            var userService = new UserService(userRepository, passwordHasher);
+
+            int userId = 1;
+            var previousUser = new User
+            {
+                Id = userId,
+                FullName = "oldname",
+                Email = "old@example.com",
+                PasswordHash = new byte[] { 0x01 },
+                PasswordSalt = new byte[] { 0x02 },
+                Role = Role.Entrepreneur,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            var existingUser = new User
+            {
+                Id = userId,
+                FullName = "oldname",
+                Email = "old@example.com",
+                PasswordHash = new byte[] { 0x01 },
+                PasswordSalt = new byte[] { 0x02 },
+                Role = Role.Entrepreneur,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            var requestDto = new UpdateUserRequest
+            {
+                FullName = null,
+                Email = null,
+                Password = null
+            };
+
+            // Act
+            userRepository.GetByIdAsync(userId).Returns(existingUser);
+            userRepository.UpdateAsync(Arg.Any<User>()).Returns(existingUser);
+
+            var result = await userService.UpdateUserAsync(userId, requestDto);
+
+            // Assert
+            await userRepository.DidNotReceive().GetByIdAsync(Arg.Any<int>());
+
+            passwordHasher.DidNotReceive().Hash(Arg.Any<string>());
+
+            await userRepository.DidNotReceive().UpdateAsync(Arg.Any<User>());
+
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public async Task UpdateUserAsync_WithFullNameFieldUpdate_ReturnsUpdatedUserResponse()
+        {
+            // Arrange
+            var userRepository = Substitute.For<IUserRepository>();
+            var passwordHasher = Substitute.For<IPasswordHasher>();
+            var userService = new UserService(userRepository, passwordHasher);
+
+            int userId = 1;
+            var previousUser = new User
+            {
+                Id = userId,
+                FullName = "oldname",
+                Email = "old@example.com",
+                PasswordHash = new byte[] { 0x01 },
+                PasswordSalt = new byte[] { 0x02 },
+                Role = Role.Entrepreneur,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            var existingUser = new User
+            {
+                Id = userId,
+                FullName = "oldname",
+                Email = "old@example.com",
+                PasswordHash = new byte[] { 0x01 },
+                PasswordSalt = new byte[] { 0x02 },
+                Role = Role.Entrepreneur,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            var requestDto = new UpdateUserRequest
+            {
+                FullName = "newname",
+                Email = null,
+                Password = null
+            };
+
+            var expectedUser = new User
+            {
+                Id = userId,
+                FullName = requestDto.FullName,
+                Email = existingUser.Email,
+                PasswordHash = existingUser.PasswordHash,
+                PasswordSalt = existingUser.PasswordSalt,
+                Role = existingUser.Role,
+                CreatedAt = existingUser.CreatedAt
+            };
+
+            // Act
+            userRepository.GetByIdAsync(userId).Returns(existingUser);
+            userRepository.UpdateAsync(Arg.Any<User>()).Returns(expectedUser);
+
+            var result = await userService.UpdateUserAsync(userId, requestDto);
+
+            // Assert
+            await userRepository.Received(1).GetByIdAsync(Arg.Any<int>());
+
+            passwordHasher.DidNotReceive().Hash(Arg.Any<string>());
+
+            await userRepository.Received(1).UpdateAsync(Arg.Any<User>());
+
+            Assert.NotNull(result);
+            Assert.IsType<UserResponse>(result);
+            Assert.Equal(requestDto.FullName, result.FullName);
+            Assert.NotEqual(previousUser.FullName, result.FullName);
+            Assert.Equal(previousUser.Email, result.Email);
+            Assert.Equal(previousUser.Role, result.Role);
+            Assert.Equal(existingUser.CreatedAt, result.CreatedAt);
+        }
+
+        [Fact]
+        public async Task UpdateUserAsync_WithEmailFieldUpdate_ReturnsUpdatedUserResponse()
+        {
+            // Arrange
+            var userRepository = Substitute.For<IUserRepository>();
+            var passwordHasher = Substitute.For<IPasswordHasher>();
+            var userService = new UserService(userRepository, passwordHasher);
+
+            int userId = 1;
+            var previousUser = new User
+            {
+                Id = userId,
+                FullName = "oldname",
+                Email = "old@example.com",
+                PasswordHash = new byte[] { 0x01 },
+                PasswordSalt = new byte[] { 0x02 },
+                Role = Role.Entrepreneur,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            var existingUser = new User
+            {
+                Id = userId,
+                FullName = "oldname",
+                Email = "old@example.com",
+                PasswordHash = new byte[] { 0x01 },
+                PasswordSalt = new byte[] { 0x02 },
+                Role = Role.Entrepreneur,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            var requestDto = new UpdateUserRequest
+            {
+                FullName = null,
+                Email = "newname@example.com",
+                Password = null
+            };
+
+            var expectedUser = new User
+            {
+                Id = userId,
+                FullName = existingUser.FullName,
+                Email = requestDto.Email,
+                PasswordHash = existingUser.PasswordHash,
+                PasswordSalt = existingUser.PasswordSalt,
+                Role = existingUser.Role,
+                CreatedAt = existingUser.CreatedAt
+            };
+
+            // Act
+            userRepository.GetByIdAsync(userId).Returns(existingUser);
+            userRepository.UpdateAsync(Arg.Any<User>()).Returns(expectedUser);
+
+            var result = await userService.UpdateUserAsync(userId, requestDto);
+
+            // Assert
+            await userRepository.Received(1).GetByIdAsync(Arg.Any<int>());
+
+            passwordHasher.DidNotReceive().Hash(Arg.Any<string>());
+
+            await userRepository.Received(1).UpdateAsync(Arg.Any<User>());
+
+            Assert.NotNull(result);
+            Assert.IsType<UserResponse>(result);
+            Assert.Equal(previousUser.FullName, result.FullName);
+            Assert.Equal(requestDto.Email, result.Email);
+            Assert.NotEqual(previousUser.Email, result.Email);
+            Assert.Equal(previousUser.Role, result.Role);
+            Assert.Equal(existingUser.CreatedAt, result.CreatedAt);
+        }
+
+        [Fact]
+        public async Task UpdateUserAsync_WithPasswordFieldUpdate_ReturnsUpdatedUserResponse()
+        {
+            // Arrange
+            var userRepository = Substitute.For<IUserRepository>();
+            var passwordHasher = Substitute.For<IPasswordHasher>();
+            var userService = new UserService(userRepository, passwordHasher);
+
+            int userId = 1;
+            var previousUser = new User
+            {
+                Id = userId,
+                FullName = "oldname",
+                Email = "old@example.com",
+                PasswordHash = new byte[] { 0x01 },
+                PasswordSalt = new byte[] { 0x02 },
+                Role = Role.Entrepreneur,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            var existingUser = new User
+            {
+                Id = userId,
+                FullName = "oldname",
+                Email = "old@example.com",
+                PasswordHash = new byte[] { 0x01 },
+                PasswordSalt = new byte[] { 0x02 },
+                Role = Role.Entrepreneur,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            var requestDto = new UpdateUserRequest
+            {
+                FullName = null,
+                Email = null,
+                Password = "newpassword"
+            };
+
+            var expectedUser = new User
+            {
+                Id = userId,
+                FullName = existingUser.FullName,
+                Email = existingUser.Email,
+                PasswordHash = new byte[] { 0x03 },
+                PasswordSalt = new byte[] { 0x05 },
+                Role = existingUser.Role,
+                CreatedAt = existingUser.CreatedAt
+            };
+
+            // Act
+            userRepository.GetByIdAsync(userId).Returns(existingUser);
+
+            passwordHasher.Hash(requestDto.Password).Returns((expectedUser.PasswordHash, expectedUser.PasswordSalt));
+
+            userRepository.UpdateAsync(Arg.Any<User>()).Returns(expectedUser);
+
+            var result = await userService.UpdateUserAsync(userId, requestDto);
+
+            // Assert
+            await userRepository.Received(1).GetByIdAsync(Arg.Any<int>());
+
+            passwordHasher.Received(1).Hash(Arg.Any<string>());
+
+            await userRepository.Received(1).UpdateAsync(Arg.Any<User>());
+
+            Assert.NotNull(result);
+            Assert.IsType<UserResponse>(result);
+            Assert.Equal(previousUser.FullName, result.FullName);
+            Assert.Equal(previousUser.Email, result.Email);
+            Assert.Equal(previousUser.Role, result.Role);
+            Assert.Equal(existingUser.CreatedAt, result.CreatedAt);
+        }
+
+        [Fact]
+        public async Task UpdateUserAsync_WhenRepositoryThrowsException_PropagatesException()
+        {
+            // Arrange
+            var userRepository = Substitute.For<IUserRepository>();
+            var passwordHasher = Substitute.For<IPasswordHasher>();
+            var userService = new UserService(userRepository, passwordHasher);
+
+            int userId = 1;
+            var requestDto = new UpdateUserRequest
+            {
+                FullName = "newname",
+                Email = "new@example.com",
+                Password = "NewPassword123!"
+            };
+
+            // Act
+            userRepository.GetByIdAsync(userId).Throws(new Exception("Database error"));
+
+            var userServiceException = await Assert.ThrowsAsync<Exception>(() => userService.UpdateUserAsync(userId, requestDto));
+
+            // Assert
+            await userRepository.Received(1).GetByIdAsync(Arg.Any<int>());
+
+            passwordHasher.DidNotReceive().Hash(Arg.Any<string>());
+
+            await userRepository.DidNotReceive().UpdateAsync(Arg.Any<User>());
+
+            Assert.Equal("Database error", userServiceException.Message);
+        }
+
+        [Fact]
+        public async Task UpdateUserAsync_WithWhitespaceFields_ThrowsArgumentException()
+        {
+            // Arrange
+            var userRepository = Substitute.For<IUserRepository>();
+            var passwordHasher = Substitute.For<IPasswordHasher>();
+            var userService = new UserService(userRepository, passwordHasher);
+
+            int userId = 1;
+            var existingUser = new User
+            {
+                Id = 1,
+                FullName = "oldname",
+                Email = "old@example.com",
+                PasswordHash = new byte[] { 0x01 },
+                PasswordSalt = new byte[] { 0x02 },
+                Role = Role.Entrepreneur,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            var requestDto = new UpdateUserRequest
+            {
+                FullName = " ",
+                Email = "",
+                Password = "\n"
+            };
+
+            // Act
+            userRepository.GetByIdAsync(userId).Returns(existingUser);
+            userRepository.UpdateAsync(Arg.Any<User>()).Returns(existingUser);
+
+            var result = await userService.UpdateUserAsync(userId, requestDto);
+
+            // Assert
+            await userRepository.DidNotReceive().GetByIdAsync(Arg.Any<int>());
+
+            passwordHasher.DidNotReceive().Hash(Arg.Any<string>());
+
+            await userRepository.DidNotReceive().UpdateAsync(Arg.Any<User>());
+
+            Assert.Null(result);
         }
     }
 }
