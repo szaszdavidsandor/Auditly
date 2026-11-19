@@ -26,8 +26,8 @@ namespace Tests
                 Id = 1,
                 FullName = "testuser",
                 Email = "testuser@example.com",
-                PasswordHash = new byte[] { 0x2d, 0x74, 0x15, 0x89, 0x4b, 0x93, 0xe2, 0x11, 0x77, 0x65, 0x48, 0x39, 0x20, 0x14, 0x55, 0x66, 0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff, 0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77 },
-                PasswordSalt = new byte[] { 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0x00 },
+                PasswordHash = new byte[] { 0x2d },
+                PasswordSalt = new byte[] { 0xaa },
                 Role = Role.Entrepreneur,
                 LocationId = null,
                 Location = null,
@@ -43,8 +43,8 @@ namespace Tests
                 Id = 2,
                 FullName = "testuser2",
                 Email = "testuser2@example.com",
-                PasswordHash = new byte[] { 0x74, 0x2d, 0x15, 0x89, 0x4b, 0x93, 0xe2, 0x11, 0x77, 0x65, 0x48, 0x39, 0x20, 0x14, 0x55, 0x66, 0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff, 0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77 },
-                PasswordSalt = new byte[] { 0xbb, 0xaa, 0xcc, 0xdd, 0xee, 0xff, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0x00 },
+                PasswordHash = new byte[] { 0x74 },
+                PasswordSalt = new byte[] { 0xbb },
                 Role = Role.Entrepreneur,
                 LocationId = null,
                 Location = null,
@@ -65,6 +65,8 @@ namespace Tests
             var actualUsers = userServiceResult.ToList();
 
             //  Assert
+            await userRepository.GetAllAsync().Received(1);
+
             Assert.IsAssignableFrom<IEnumerable<UserResponse>>(userServiceResult);
 
             Assert.Equal(Users.Count, actualUsers.Count);
@@ -77,6 +79,27 @@ namespace Tests
                 Assert.Equal(Users[i].Role, actualUsers[i].Role);
                 Assert.Equal(Users[i].CreatedAt, actualUsers[i].CreatedAt);
             }
+        }
+
+        [Fact]
+        public async Task GetAllUsersAsync_WhenNoUsersExist_ReturnsEmptyList()
+        {
+            // Arrange
+            var userRepository = Substitute.For<IUserRepository>();
+            var passwordHasher = Substitute.For<IPasswordHasher>();
+            var userService = new UserService(userRepository, passwordHasher);
+
+            userRepository.GetAllAsync().Returns(new List<User>());
+
+            // Act
+            var userServiceResult = await userService.GetAllUsersAsync();
+            var actualUsers = userServiceResult.ToList();
+
+            // Assert
+            await userRepository.GetAllAsync().Received(1);
+            Assert.NotNull(userServiceResult);
+            Assert.IsAssignableFrom<IEnumerable<UserResponse>>(userServiceResult);
+            Assert.Empty(actualUsers);
         }
 
         [Fact]
