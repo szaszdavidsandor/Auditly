@@ -1,4 +1,5 @@
-﻿using Domain.Interface;
+﻿using Application.Exceptions;
+using Domain.Interface;
 using Domain.Model;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -27,13 +28,16 @@ namespace Infrastructure.Repository
 
         public async Task<User?> GetByIdAsync(int id)
         {
+            if (id <= 0)
+                GlobalExceptionHandler.ThrowInvalidArgument();
+
             return await _dbSet.FindAsync(id);
         }
 
         public async Task<User?> GetByUsernameOrEmailAsync(string fullName, string email)
         {
-            if (string.IsNullOrEmpty(fullName) && string.IsNullOrEmpty(email))
-                return null;
+            if (string.IsNullOrWhiteSpace(fullName) && string.IsNullOrWhiteSpace(email))
+                GlobalExceptionHandler.ThrowInvalidArgument();
 
             var user = await _dbSet.FirstOrDefaultAsync(e =>
                 e.FullName == fullName || e.Email == email);
@@ -48,6 +52,9 @@ namespace Infrastructure.Repository
 
         public async Task<User?> AddAsync(User entity)
         {
+            if (entity is null)
+                GlobalExceptionHandler.ThrowInvalidArgument();
+
             await _dbSet.AddAsync(entity);
             await _context.SaveChangesAsync();
             return entity;
@@ -55,16 +62,31 @@ namespace Infrastructure.Repository
 
         public async Task<User?> UpdateAsync(User entity)
         {
+            if (entity is null)
+                GlobalExceptionHandler.ThrowInvalidArgument();
+
             _dbSet.Update(entity);
-            await _context.SaveChangesAsync();
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                GlobalExceptionHandler.ThrowNotFound();
+            }
+
             return entity;
         }
 
         public async Task<bool> SoftDeleteAsync(int id)
         {
+            if (id <= 0)
+                GlobalExceptionHandler.ThrowInvalidArgument();
+
             var entity = await _dbSet.FindAsync(id);
             if (entity == null)
-                throw new InvalidOperationException("Entity not found");
+                GlobalExceptionHandler.ThrowNotFound();
 
             _dbSet.Remove(entity);
             await _context.SaveChangesAsync();

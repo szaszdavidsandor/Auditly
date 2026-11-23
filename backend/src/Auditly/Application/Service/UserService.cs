@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Application.DTO;
 using Application.DTO.Request;
 using Application.DTO.Response;
+using Application.Exceptions;
 
 namespace Application.Services
 {
@@ -24,6 +25,8 @@ namespace Application.Services
         public async Task<IEnumerable<UserResponse>> GetAllUsersAsync()
         {
             var users = await _userRepository.GetAllAsync();
+            if (users is null)
+                GlobalExceptionHandler.ThrowNotFound();
 
             return users.Select(user => new UserResponse
             {
@@ -37,9 +40,12 @@ namespace Application.Services
 
         public async Task<UserResponse?> GetUserByIdAsync(int id)
         {
+            if (id <= 0)
+                GlobalExceptionHandler.ThrowInvalidArgument();
+
             var user = await _userRepository.GetByIdAsync(id);
-            if (user is null) 
-                return null;
+            if (user is null)
+                GlobalExceptionHandler.ThrowNotFound();
 
             return new UserResponse
             {
@@ -53,6 +59,11 @@ namespace Application.Services
 
         public async Task<UserResponse> CreateUserAsync(CreateUserRequest requestDto)
         {
+            if (string.IsNullOrWhiteSpace(requestDto.FullName)
+                || string.IsNullOrWhiteSpace(requestDto.Email)
+                || string.IsNullOrWhiteSpace(requestDto.Password))
+                GlobalExceptionHandler.ThrowInvalidArgument();
+
             var user = new User
             {
                 FullName = requestDto.FullName,
@@ -61,7 +72,10 @@ namespace Application.Services
                 PasswordSalt = _passwordHasher.Hash(requestDto.Password).salt,
             };
 
+            var existingUser = await _userRepository.GetByUsernameOrEmailAsync(requestDto.FullName, requestDto.Email);
             var createdUser = await _userRepository.AddAsync(user);
+            if (existingUser is not null || createdUser is null)
+                GlobalExceptionHandler.ThrowInvalidOperation();
 
             return new UserResponse
             {
@@ -75,9 +89,12 @@ namespace Application.Services
 
         public async Task<UserResponse?> UpdateUserAsync(int id, UpdateUserRequest requestDto)
         {
+            if (id <= 0 || requestDto is null)
+                GlobalExceptionHandler.ThrowInvalidArgument();
+
             var user = await _userRepository.GetByIdAsync(id);
             if (user is null)
-                return null;
+                GlobalExceptionHandler.ThrowNotFound();
 
             bool isUpdated = false;
 
@@ -110,9 +127,6 @@ namespace Application.Services
                 }
             }
 
-            if (!isUpdated)
-                return null;
-
             await _userRepository.UpdateAsync(user);
 
             UserResponse response = new UserResponse
@@ -129,9 +143,12 @@ namespace Application.Services
 
         public async Task<bool> SoftDeleteUserAsync(int id)
         {
+            if (id <= 0)
+                GlobalExceptionHandler.ThrowInvalidArgument();
+
             var user = await _userRepository.GetByIdAsync(id);
-            if (user is null) 
-                return false;
+            if (user is null)
+                GlobalExceptionHandler.ThrowNotFound();
 
             await _userRepository.SoftDeleteAsync(id);
             return true;

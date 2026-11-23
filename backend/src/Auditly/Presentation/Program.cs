@@ -1,3 +1,4 @@
+using Presentation.Middleware;
 using System.Reflection;
 using System.Threading.RateLimiting;
 
@@ -71,13 +72,12 @@ var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 //==================================================================================================
+app.UseCustomExceptionHandler();
+
+app.MapOpenApi();
+
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
-}
-else
-{
-    app.UseExceptionHandler("/Error");
     app.UseHsts();
 }
 
