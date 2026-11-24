@@ -34,13 +34,12 @@ namespace Infrastructure.Repository
             return await _dbSet.FindAsync(id);
         }
 
-        public async Task<User?> GetByUsernameOrEmailAsync(string fullName, string email)
+        public async Task<User?> GetByEmailAsync(string email)
         {
-            if (string.IsNullOrWhiteSpace(fullName) && string.IsNullOrWhiteSpace(email))
+            if (string.IsNullOrWhiteSpace(email))
                 GlobalExceptionHandler.ThrowInvalidArgument();
 
-            var user = await _dbSet.FirstOrDefaultAsync(e =>
-                e.FullName == fullName || e.Email == email);
+            var user = await _dbSet.FirstOrDefaultAsync(u => u.Email == email);
 
             return user;
         }

@@ -11,7 +11,7 @@ namespace Domain.Interface
 
         Task<User?> GetByIdAsync(int id);
 
-        Task<User?> GetByUsernameOrEmailAsync(string username, string email);
+        Task<User?> GetByEmailAsync(string email);
 
         IQueryable<User?> GetQueryable();
 

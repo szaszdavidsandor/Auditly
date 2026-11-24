@@ -36,6 +36,12 @@ namespace Application.Exceptions
             throw new ErrorResponse(HttpStatusCode.UnsupportedMediaType, "The requested operation or media type is not supported.");
         }
 
+        [DoesNotReturn]
+        public static ErrorResponse ThrowEmailAlreadyExists()
+        {
+            throw new ErrorResponse(HttpStatusCode.Conflict, "The email is already exists.");
+        }
+
         public static ErrorResponse Handle(Exception? exception)
         {
             return exception is ErrorResponse errorResponse

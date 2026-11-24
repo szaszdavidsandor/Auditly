@@ -1,5 +1,6 @@
 ﻿using Application.DTO.Request;
 using Application.DTO.Response;
+using Application.Exceptions;
 using Application.Services;
 using Domain.Enum;
 using Domain.Interface;
@@ -7,6 +8,7 @@ using Domain.Model;
 using Infrastructure.Security;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
+using System.Net;
 
 namespace Tests
 {
@@ -203,6 +205,12 @@ namespace Tests
             var result = await userService.CreateUserAsync(requestDto);
 
             //  Assert
+            await userRepository.Received(1).GetByEmailAsync(requestDto.Email);
+
+            passwordHasher.Received(1).Hash(requestDto.Password);
+
+            await userRepository.Received(1).AddAsync(Arg.Any<User>());
+
             Assert.NotNull(result);
 
             Assert.IsType<UserResponse>(result);
@@ -212,6 +220,286 @@ namespace Tests
             Assert.Equal(createdUser.Email, result.Email);
             Assert.Equal(createdUser.Role, result.Role);
             Assert.Equal(createdUser.CreatedAt, result.CreatedAt);
+        }
+
+        public static TheoryData<CreateUserRequest> InvalidCreateUserRequests = new TheoryData<CreateUserRequest>
+        {
+            new CreateUserRequest { FullName = null, Email = "testuser@example.com", Password = "Password123!" },
+            new CreateUserRequest { FullName = "", Email = "testuser@example.com", Password = "Password123!" },
+            new CreateUserRequest { FullName = " ", Email = "testuser@example.com", Password = "Password123!" },
+            new CreateUserRequest { FullName = "testuser", Email = null, Password = "Password123!" },
+            new CreateUserRequest { FullName = "testuser", Email = "", Password = "Password123!" },
+            new CreateUserRequest { FullName = "testuser", Email = "\t", Password = "Password123!" },
+            new CreateUserRequest { FullName = "testuser", Email = "testuser@example.com", Password = null },
+            new CreateUserRequest { FullName = "testuser", Email = "testuser@example.com", Password = "" },
+            new CreateUserRequest { FullName = "testuser", Email = "testuser@example.com", Password = "\n" }
+        };
+
+        [Theory]
+        [MemberData(nameof(InvalidCreateUserRequests))]
+        public async Task CreateUserAsync_WithMissingOrWhitespaceFields_ThrowsBadRequest(CreateUserRequest requestDto)
+        {
+            //  Arrange
+            var userRepository = Substitute.For<IUserRepository>();
+            var passwordHasher = Substitute.For<IPasswordHasher>();
+            var userService = new UserService(userRepository, passwordHasher);
+
+            //  Act
+            var exception = await Assert.ThrowsAsync<ErrorResponse>(() => userService.CreateUserAsync(requestDto));
+
+            var expected = Assert.Throws<ErrorResponse>(() => GlobalExceptionHandler.ThrowInvalidArgument());
+
+            //  Assert
+            passwordHasher.DidNotReceive().Hash(Arg.Any<string>());
+
+            await userRepository.DidNotReceive().GetByEmailAsync(Arg.Any<string>());
+
+            await userRepository.DidNotReceive().AddAsync(Arg.Any<User>());
+            
+            Assert.Equal(expected.StatusCode, exception.StatusCode);
+            Assert.Equal(expected.Message, exception.Message);
+        }
+
+        [Fact]
+        public async Task CreateUserAsync_WhenEmailAlreadyExists_ThrowsConflict()
+        {
+            //  Arrange
+            var userRepository = Substitute.For<IUserRepository>();
+            var passwordHasher = Substitute.For<IPasswordHasher>();
+            var userService = new UserService(userRepository, passwordHasher);
+
+            var requestDto = new CreateUserRequest
+            {
+                FullName = "testuser",
+                Email = "testuser@example.com",
+                Password = "Password123!"
+            };
+
+            var existingUser = new User
+            {
+                Id = 1,
+                FullName = "otheruser",
+                Email = requestDto.Email,
+                PasswordHash = new byte[] { 0x01 },
+                PasswordSalt = new byte[] { 0x02 },
+                Role = Role.Entrepreneur,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            userRepository.GetByEmailAsync(requestDto.Email).Returns(existingUser);
+
+            //  Act
+            var exception = await Assert.ThrowsAsync<ErrorResponse>(() => userService.CreateUserAsync(requestDto));
+
+            var expected = Assert.Throws<ErrorResponse>(() => GlobalExceptionHandler.ThrowEmailAlreadyExists());
+
+            //  Assert
+            await userRepository.Received(1).GetByEmailAsync(requestDto.Email);
+
+            passwordHasher.DidNotReceive().Hash(requestDto.Password);
+
+            await userRepository.DidNotReceive().AddAsync(Arg.Any<User>());
+            
+            Assert.Equal(expected.StatusCode, exception.StatusCode);
+            Assert.Equal(expected.Message, exception.Message);
+        }
+
+        [Fact]
+        public async Task CreateUserAsync_WhenOnlyFullNameMatchesExistingUser_ReturnsUserResponse()
+        {
+            //  Arrange
+            var userRepository = Substitute.For<IUserRepository>();
+            var passwordHasher = Substitute.For<IPasswordHasher>();
+            var userService = new UserService(userRepository, passwordHasher);
+
+            var requestDto = new CreateUserRequest
+            {
+                FullName = "testuser",
+                Email = "testuser@example.com",
+                Password = "Password123!"
+            };
+
+            var existingUser = new User
+            {
+                Id = 1,
+                FullName = requestDto.FullName,
+                Email = "exists@example.com",
+                PasswordHash = new byte[] { 0x01 },
+                PasswordSalt = new byte[] { 0x02 },
+                Role = Role.Entrepreneur,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            var createdUser = new User
+            {
+                Id = 2,
+                FullName = requestDto.FullName,
+                Email = requestDto.Email,
+                PasswordHash = new byte[] { 0x03 },
+                PasswordSalt = new byte[] { 0x04 },
+                Role = Role.Entrepreneur,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            passwordHasher.Hash(requestDto.Password).Returns((createdUser.PasswordHash, createdUser.PasswordSalt));
+
+            userRepository.GetByEmailAsync(requestDto.Email).Returns(existingUser);
+
+            userRepository.AddAsync(Arg.Any<User>()).Returns(createdUser);
+
+            //  Act
+            var result = await userService.CreateUserAsync(requestDto);
+
+            //  Assert
+            await userRepository.Received(1).GetByEmailAsync(requestDto.Email);
+
+            passwordHasher.Received(1).Hash(requestDto.Password);
+
+            await userRepository.Received(1).AddAsync(Arg.Any<User>());
+
+            Assert.NotNull(result);
+
+            Assert.IsType<UserResponse>(result);
+
+            Assert.Equal(createdUser.Id, result.Id);
+            Assert.Equal(createdUser.FullName, result.FullName);
+            Assert.Equal(createdUser.Email, result.Email);
+            Assert.Equal(createdUser.Role, result.Role);
+            Assert.Equal(createdUser.CreatedAt, result.CreatedAt);
+        }
+
+        [Fact]
+        public async Task CreateUserAsync_WhenPasswordAlreadyExists_ReturnsUserResponse()
+        {
+            //  Arrange
+            var userRepository = Substitute.For<IUserRepository>();
+            var passwordHasher = Substitute.For<IPasswordHasher>();
+            var userService = new UserService(userRepository, passwordHasher);
+
+            var requestDto = new CreateUserRequest
+            {
+                FullName = "testuser",
+                Email = "testuser@example.com",
+                Password = "Password123!"
+            };
+
+            var existingUser = new User
+            {
+                Id = 1,
+                FullName = "otheruser",
+                Email = "other@example.com",
+                PasswordHash = new byte[] { 0x01 },
+                PasswordSalt = new byte[] { 0xaa },
+                Role = Role.Entrepreneur,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            var newHash = new byte[] { 0x02 };
+            var newSalt = new byte[] { 0xcc };
+
+            passwordHasher.Hash(requestDto.Password).Returns((newHash, newSalt));
+
+            userRepository.GetByEmailAsync(requestDto.Email).Returns((User?)null);
+
+            var createdUser = new User
+            {
+                Id = 2,
+                FullName = requestDto.FullName,
+                Email = requestDto.Email,
+                Role = Role.Entrepreneur,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            userRepository.AddAsync(Arg.Any<User>()).Returns(createdUser);
+
+            //  Act
+            var result = await userService.CreateUserAsync(requestDto);
+
+            //  Assert
+            await userRepository.Received(1).GetByEmailAsync(requestDto.Email);
+
+            passwordHasher.Received(1).Hash(requestDto.Password);
+
+            await userRepository.Received(1).AddAsync(Arg.Is<User>(u =>
+                u.PasswordHash == newHash && u.PasswordSalt == newSalt));
+
+            Assert.NotNull(result);
+
+            Assert.IsType<UserResponse>(result);
+
+            Assert.Equal(createdUser.Id, result.Id);
+            Assert.Equal(createdUser.FullName, result.FullName);
+            Assert.Equal(createdUser.Email, result.Email);
+            Assert.NotEqual(existingUser.PasswordHash, newHash);
+            Assert.NotEqual(existingUser.PasswordSalt, newSalt);
+            Assert.Equal(createdUser.Role, result.Role);
+            Assert.Equal(createdUser.CreatedAt, result.CreatedAt);
+        }
+
+        [Fact]
+        public async Task CreateUserAsync_WhenAddAsyncReturnsNull_ThrowsConflict()
+        {
+            //  Arrange
+            var userRepository = Substitute.For<IUserRepository>();
+            var passwordHasher = Substitute.For<IPasswordHasher>();
+            var userService = new UserService(userRepository, passwordHasher);
+
+            var requestDto = new CreateUserRequest
+            {
+                FullName = "testuser",
+                Email = "testuser@example.com",
+                Password = "Password123!"
+            };
+
+            passwordHasher.Hash(requestDto.Password).Returns((new byte[] { 0x03 }, new byte[] { 0x04 }));
+
+            userRepository.AddAsync(Arg.Any<User>()).Returns((User?)null);
+
+            //  Act
+            var exception = await Assert.ThrowsAsync<ErrorResponse>(() => userService.CreateUserAsync(requestDto));
+
+            var expected = Assert.Throws<ErrorResponse>(() => GlobalExceptionHandler.ThrowInvalidOperation());
+
+            //  Assert
+            await userRepository.Received(1).GetByEmailAsync(requestDto.Email);
+
+            passwordHasher.Received(1).Hash(requestDto.Password);
+
+            await userRepository.Received(1).AddAsync(Arg.Any<User>());
+            
+            Assert.Equal(expected.StatusCode, exception.StatusCode);
+            Assert.Equal(expected.Message, exception.Message);
+        }
+
+        [Fact]
+        public async Task CreateUserAsync_WhenRepositoryThrowsException_PropagatesException()
+        {
+            //  Arrange
+            var userRepository = Substitute.For<IUserRepository>();
+            var passwordHasher = Substitute.For<IPasswordHasher>();
+            var userService = new UserService(userRepository, passwordHasher);
+
+            var requestDto = new CreateUserRequest
+            {
+                FullName = "testuser",
+                Email = "testuser@example.com",
+                Password = "Password123!"
+            };
+
+            userRepository.GetByEmailAsync(Arg.Any<string>()).Throws(new Exception("Database error"));
+
+            //  Act
+            var exception = await Assert.ThrowsAsync<Exception>(() => userService.CreateUserAsync(requestDto));
+
+            //  Assert
+            await userRepository.Received(1).GetByEmailAsync(requestDto.Email);
+
+            passwordHasher.DidNotReceive().Hash(Arg.Any<string>());
+
+            await userRepository.DidNotReceive().AddAsync(Arg.Any<User>());
+
+            Assert.Equal("Database error", exception.Message);
+
         }
 
         [Fact]

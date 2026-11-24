@@ -64,17 +64,22 @@ namespace Application.Services
                 || string.IsNullOrWhiteSpace(requestDto.Password))
                 GlobalExceptionHandler.ThrowInvalidArgument();
 
+            var existingUser = await _userRepository.GetByEmailAsync(requestDto.Email);
+            if (existingUser is not null)
+                GlobalExceptionHandler.ThrowEmailAlreadyExists();
+            
+            var (hash, salt) = _passwordHasher.Hash(requestDto.Password);
+
             var user = new User
             {
                 FullName = requestDto.FullName,
                 Email = requestDto.Email,
-                PasswordHash = _passwordHasher.Hash(requestDto.Password).hash,
-                PasswordSalt = _passwordHasher.Hash(requestDto.Password).salt,
+                PasswordHash = hash,
+                PasswordSalt = salt,
             };
-
-            var existingUser = await _userRepository.GetByUsernameOrEmailAsync(requestDto.FullName, requestDto.Email);
+            
             var createdUser = await _userRepository.AddAsync(user);
-            if (existingUser is not null || createdUser is null)
+            if (createdUser is null)
                 GlobalExceptionHandler.ThrowInvalidOperation();
 
             return new UserResponse
