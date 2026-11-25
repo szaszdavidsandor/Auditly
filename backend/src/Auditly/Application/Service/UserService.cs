@@ -155,8 +155,7 @@ namespace Application.Services
             if (user is null)
                 GlobalExceptionHandler.ThrowNotFound();
 
-            await _userRepository.SoftDeleteAsync(id);
-            return true;
+            return await _userRepository.SoftDeleteAsync(id);
         }
     }
 }

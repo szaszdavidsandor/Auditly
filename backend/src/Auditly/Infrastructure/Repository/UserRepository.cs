@@ -49,22 +49,22 @@ namespace Infrastructure.Repository
             return _dbSet.AsQueryable();
         }
 
-        public async Task<User?> AddAsync(User entity)
+        public async Task<User?> AddAsync(User user)
         {
-            if (entity is null)
+            if (user is null)
                 GlobalExceptionHandler.ThrowInvalidArgument();
 
-            await _dbSet.AddAsync(entity);
+            await _dbSet.AddAsync(user);
             await _context.SaveChangesAsync();
-            return entity;
+            return user;
         }
 
-        public async Task<User?> UpdateAsync(User entity)
+        public async Task<User?> UpdateAsync(User user)
         {
-            if (entity is null)
+            if (user is null)
                 GlobalExceptionHandler.ThrowInvalidArgument();
 
-            _dbSet.Update(entity);
+            _dbSet.Update(user);
 
             try
             {
@@ -75,7 +75,7 @@ namespace Infrastructure.Repository
                 GlobalExceptionHandler.ThrowNotFound();
             }
 
-            return entity;
+            return user;
         }
 
         public async Task<bool> SoftDeleteAsync(int id)
@@ -83,11 +83,11 @@ namespace Infrastructure.Repository
             if (id <= 0)
                 GlobalExceptionHandler.ThrowInvalidArgument();
 
-            var entity = await _dbSet.FindAsync(id);
-            if (entity == null)
+            var user = await _dbSet.FindAsync(id);
+            if (user == null)
                 GlobalExceptionHandler.ThrowNotFound();
 
-            _dbSet.Remove(entity);
+            _dbSet.Remove(user);
             await _context.SaveChangesAsync();
             return true;
         }

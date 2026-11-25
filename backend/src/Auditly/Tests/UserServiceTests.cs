@@ -951,5 +951,158 @@ namespace Tests
 
             Assert.Null(result);
         }
+
+        [Fact]
+        public async Task SoftDeleteUserAsync_WithValidIdAndExistingUser_ReturnsTrue()
+        {
+            // Arrange
+            var userRepository = Substitute.For<IUserRepository>();
+            var passwordHasher = Substitute.For<IPasswordHasher>();
+            var userService = new UserService(userRepository, passwordHasher);
+
+            int userId = 1;
+            var existingUser = new User
+            {
+                Id = userId,
+                FullName = "testuser",
+                Email = "testuser@example.com",
+                PasswordHash = new byte[] { 0x01 },
+                PasswordSalt = new byte[] { 0x02 },
+                Role = Role.Entrepreneur,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            userRepository.GetByIdAsync(userId).Returns(existingUser);
+            userRepository.SoftDeleteAsync(userId).Returns(true);
+
+            // Act
+            var result = await userService.SoftDeleteUserAsync(userId);
+
+            // Assert
+            await userRepository.Received(1).GetByIdAsync(userId);
+
+            await userRepository.Received(1).SoftDeleteAsync(userId);
+
+            Assert.True(result);
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(-1)]
+        [InlineData(int.MinValue)]
+        public async Task SoftDeleteUserAsync_WithIdLessThanOrEqualToZero_ThrowsInvalidArgument(int userId)
+        {
+            // Arrange
+            var userRepository = Substitute.For<IUserRepository>();
+            var passwordHasher = Substitute.For<IPasswordHasher>();
+            var userService = new UserService(userRepository, passwordHasher);
+
+            // Act
+            var exception = await Assert.ThrowsAsync<ErrorResponse>(() => userService.SoftDeleteUserAsync(userId));
+
+            var expected = Assert.Throws<ErrorResponse>(() => GlobalExceptionHandler.ThrowInvalidArgument());
+
+            // Assert
+            await userRepository.DidNotReceive().GetByIdAsync(Arg.Any<int>());
+
+            await userRepository.DidNotReceive().SoftDeleteAsync(Arg.Any<int>());
+
+            Assert.Equal(expected.StatusCode, exception.StatusCode);
+            Assert.Equal(expected.Message, exception.Message);
+        }
+
+        [Fact]
+        public async Task SoftDeleteUserAsync_WhenUserNotFound_ThrowsNotFound()
+        {
+            // Arrange
+            var userRepository = Substitute.For<IUserRepository>();
+            var passwordHasher = Substitute.For<IPasswordHasher>();
+            var userService = new UserService(userRepository, passwordHasher);
+
+            int userId = 99;
+
+            userRepository.GetByIdAsync(userId).Returns((User?)null);
+
+            // Act
+            var exception = await Assert.ThrowsAsync<ErrorResponse>(() => userService.SoftDeleteUserAsync(userId));
+
+            var expected = Assert.Throws<ErrorResponse>(() => GlobalExceptionHandler.ThrowNotFound());
+
+            // Assert
+            await userRepository.Received(1).GetByIdAsync(userId);
+
+            await userRepository.DidNotReceive().SoftDeleteAsync(Arg.Any<int>());
+
+            Assert.Equal(expected.StatusCode, exception.StatusCode);
+            Assert.Equal(expected.Message, exception.Message);
+        }
+
+        [Fact]
+        public async Task SoftDeleteUserAsync_WhenSoftDeleteAsyncReturnsFalse_ReturnsFalse()
+        {
+            // Arrange
+            var userRepository = Substitute.For<IUserRepository>();
+            var passwordHasher = Substitute.For<IPasswordHasher>();
+            var userService = new UserService(userRepository, passwordHasher);
+
+            int userId = 1;
+            var existingUser = new User
+            {
+                Id = userId,
+                FullName = "testuser",
+                Email = "testuser@example.com",
+                PasswordHash = new byte[] { 0x01 },
+                PasswordSalt = new byte[] { 0x02 },
+                Role = Role.Entrepreneur,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            userRepository.GetByIdAsync(userId).Returns(existingUser);
+            userRepository.SoftDeleteAsync(userId).Returns(false);
+
+            // Act
+            var result = await userService.SoftDeleteUserAsync(userId);
+
+            // Assert
+            await userRepository.Received(1).GetByIdAsync(userId);
+
+            await userRepository.Received(1).SoftDeleteAsync(userId);
+
+            Assert.False(result);
+        }
+
+        [Fact]
+        public async Task SoftDeleteUserAsync_WhenRepositoryThrowsException_PropagatesException()
+        {
+            // Arrange
+            var userRepository = Substitute.For<IUserRepository>();
+            var passwordHasher = Substitute.For<IPasswordHasher>();
+            var userService = new UserService(userRepository, passwordHasher);
+
+            int userId = 1;
+            var existingUser = new User
+            {
+                Id = userId,
+                FullName = "testuser",
+                Email = "testuser@example.com",
+                PasswordHash = new byte[] { 0x01 },
+                PasswordSalt = new byte[] { 0x02 },
+                Role = Role.Entrepreneur,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            userRepository.GetByIdAsync(userId).Returns(existingUser);
+            userRepository.SoftDeleteAsync(userId).Throws(new Exception("Database error"));
+
+            // Act
+            var exception = await Assert.ThrowsAsync<Exception>(() => userService.SoftDeleteUserAsync(userId));
+
+            // Assert
+            await userRepository.Received(1).GetByIdAsync(userId);
+
+            await userRepository.Received(1).SoftDeleteAsync(userId);
+
+            Assert.Equal("Database error", exception.Message);
+        }
     }
 }
