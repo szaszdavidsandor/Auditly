@@ -10,7 +10,7 @@ using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using System.Net;
 
-namespace Tests
+namespace Tests.Test
 {
     public class UserServiceTests
     {
