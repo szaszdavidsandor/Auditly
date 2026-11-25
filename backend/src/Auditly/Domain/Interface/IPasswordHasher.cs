@@ -11,6 +11,6 @@ namespace Domain.Interface
         private static readonly HashAlgorithmName Algorithm = HashAlgorithmName.SHA512;
         
         public (byte[] hash, byte[] salt) Hash(string password);
-        public bool VerifyHashedPassword(string password, string hashedPassword);
+        public bool VerifyHashedPassword(string password, byte[] passwordHash, byte[] salt);
     }
 }

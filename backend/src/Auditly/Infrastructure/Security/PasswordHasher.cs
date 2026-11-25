@@ -24,12 +24,8 @@ namespace Infrastructure.Security
             return (hash, salt);
         }
 
-        public bool VerifyHashedPassword(string password, string hashedPassword)
+        public bool VerifyHashedPassword(string password, byte[] passwordHash, byte[] salt)
         {
-            string[] parts = hashedPassword.Split('-');
-            byte[] passwordHash = Convert.FromHexString(parts[0]);
-            byte[] salt = Convert.FromHexString(parts[1]);
-
             byte[] inputHash = Rfc2898DeriveBytes.Pbkdf2(password, salt, Iterations, Algorithm, HashSize);
 
             return CryptographicOperations.FixedTimeEquals(passwordHash, inputHash);
