@@ -1,5 +1,5 @@
 <fieldset class="roles" [disabled]="disabled()">
-  <legend class="roles__legend">Válassz szerepkört</legend>
+  <legend class="roles__legend">{{ legend() }}</legend>
 
   <div class="roles__grid">
     @for (option of options; track option.value) {

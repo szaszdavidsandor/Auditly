@@ -7,6 +7,14 @@ export interface LoginRequest {
   rememberMe: boolean;
 }
 
+export interface RegisterRequest {
+  role: UserRole;
+  name: string;
+  email: string;
+  password: string;
+  termsAccepted: boolean;
+}
+
 export interface AuthSession {
   email: string;
   role: UserRole;

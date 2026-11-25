@@ -1,0 +1,208 @@
+ADATKEZELÉSI TÁJÉKOZTATÓ
+Auditly – feladatkezelő platform könyvelők és vállalkozók részére
+
+Hatályos: [ÉÉÉÉ. HH. NN.]-tól
+
+A szögletes zárójelben lévő részeket ([...]) a közzététel előtt ki kell tölteni.
+
+======================================================================
+1. AZ ADATKEZELŐ
+======================================================================
+
+Név:            [Üzemeltető neve / cégneve]
+Székhely:       [Cím]
+Cégjegyzékszám / nyilvántartási szám: [...]
+Adószám:        [...]
+E-mail:         [adatvedelem@...]
+Képviselő:      [Név]
+
+Adatvédelmi tisztviselő: [Név, elérhetőség] / Az Adatkezelő nem köteles
+adatvédelmi tisztviselőt kijelölni.
+
+Jelen tájékoztató az Európai Parlament és a Tanács (EU) 2016/679 rendelete
+(általános adatvédelmi rendelet, a továbbiakban: GDPR), valamint az
+információs önrendelkezési jogról és az információszabadságról szóló 2011.
+évi CXII. törvény (Infotv.) alapján készült.
+
+======================================================================
+2. A SZOLGÁLTATÁS RÖVID LEÍRÁSA
+======================================================================
+
+Az Auditly egy online feladatkezelő platform, amelyen keresztül a könyvelők
+és az ügyfeleik (egyéni vállalkozók, vállalkozások) feladatokat oszthatnak
+meg és követhetnek nyomon. Az Auditly nem állít ki számlát, és nem végez
+könyvelési tevékenységet.
+
+======================================================================
+3. A KEZELT ADATOK, AZ ADATKEZELÉS CÉLJA, JOGALAPJA ÉS IDŐTARTAMA
+======================================================================
+
+3.1. Regisztráció és felhasználói fiók
+----------------------------------------------------------------------
+Kezelt adatok: teljes név, e-mail cím, jelszó (kizárólag visszafejthetetlen,
+               titkosított – hash-elt – formában), szerepkör (könyvelő /
+               vállalkozó), a regisztráció időpontja.
+Cél:           a felhasználói fiók létrehozása és kezelése, a bejelentkezés
+               biztosítása, kapcsolattartás a szolgáltatással összefüggésben.
+Jogalap:       GDPR 6. cikk (1) bekezdés b) pont – a felhasználóval kötött
+               szerződés (a szolgáltatás igénybevétele) teljesítése.
+Időtartam:     a fiók törléséig. A fiók törlését követő [30] napon belül az
+               adatokat véglegesen töröljük.
+
+Az adatok megadása a szolgáltatás igénybevételének feltétele; ezek nélkül a
+regisztráció nem lehetséges.
+
+3.2. Vállalkozói adószám ellenőrzése (csak vállalkozói fiók esetén)
+----------------------------------------------------------------------
+Kezelt adatok: a vállalkozás adószáma, az ellenőrzés eredménye és időpontja,
+               a Nemzeti Adó- és Vámhivatal (NAV) nyilvántartásában az
+               adószámhoz tartozó név.
+Cél:           annak ellenőrzése, hogy a regisztráló valóban létező,
+               működő vállalkozás; a hamis és az ugyanazzal az adószámmal
+               létrehozott többszörös fiókok kiszűrése.
+Jogalap:       GDPR 6. cikk (1) bekezdés f) pont – az Adatkezelő jogos
+               érdeke. A jogos érdek: a platform megbízhatóságának
+               biztosítása, hogy a könyvelők kizárólag valós vállalkozásokkal
+               kerüljenek kapcsolatba, valamint a visszaélések megelőzése.
+               Az Adatkezelő érdekmérlegelési tesztet végzett, amely kérésre
+               megismerhető.
+Időtartam:     a fiók törléséig, azt követően [30] napon belül töröljük.
+
+Az adószámot kizárólag a fenti célra használjuk; más célra (pl. marketing,
+adatértékesítés) nem használjuk fel. Az adószámot kizárólag a fiók
+tulajdonosa és a hozzá rendelt könyvelő láthatja.
+
+Az egyéni vállalkozók adószáma közhiteles nyilvántartásban nyilvánosan
+elérhető adat. Az Adatkezelő nem kéri be a magánszemély adóazonosító jelét.
+
+Az ellenőrzés automatizált lekérdezéssel történik. Ha az ellenőrzés
+sikertelen, a felhasználó az [adatvedelem@...] címen emberi felülvizsgálatot
+kérhet, és előadhatja álláspontját.
+
+3.3. Feladatok és a platformon megosztott tartalmak
+----------------------------------------------------------------------
+Kezelt adatok: a felhasználók által létrehozott feladatok, határidők,
+               megjegyzések, státuszok, valamint az, hogy mely könyvelő
+               mely vállalkozóval áll kapcsolatban.
+Cél:           a feladatkezelő szolgáltatás nyújtása.
+Jogalap:       GDPR 6. cikk (1) bekezdés b) pont – szerződés teljesítése.
+Időtartam:     a fiók törléséig, illetve amíg a feladatot a felhasználó
+               nem törli.
+
+Kérjük, hogy a feladatokban ne ossz meg a szükségesnél több személyes
+adatot, különösen ne különleges adatot (pl. egészségügyi adat).
+
+3.4. Bejelentkezési munkamenet és biztonsági naplók
+----------------------------------------------------------------------
+Kezelt adatok: munkamenet-azonosító (süti), IP-cím, a kérés időpontja,
+               sikertelen bejelentkezési kísérletek.
+Cél:           a bejelentkezett állapot fenntartása, a rendszer biztonsága,
+               a túlterheléses és jelszó-próbálgatásos támadások kivédése.
+Jogalap:       GDPR 6. cikk (1) bekezdés f) pont – az Adatkezelő jogos
+               érdeke a szolgáltatás biztonságos működtetéséhez.
+Időtartam:     munkamenet-süti: kijelentkezésig, illetve „Emlékezz rám”
+               választása esetén legfeljebb [30] napig; biztonsági naplók:
+               [90] nap.
+
+A naplókba jelszót és adószámot nem rögzítünk.
+
+======================================================================
+4. SÜTIK (COOKIE-K)
+======================================================================
+
+A platform kizárólag a működéshez feltétlenül szükséges sütit használ:
+
+Név:     [session süti neve]
+Cél:     a bejelentkezett állapot fenntartása
+Típus:   HttpOnly, Secure, a munkamenet végéig vagy „Emlékezz rám” esetén
+         legfeljebb [30] napig érvényes
+
+Ehhez a sütihez hozzájárulás nem szükséges. Analitikai vagy marketing célú
+sütit nem használunk.
+
+======================================================================
+5. ADATFELDOLGOZÓK ÉS CÍMZETTEK
+======================================================================
+
+Az adatokat nem adjuk el és nem adjuk át harmadik félnek marketing célra.
+Az alábbi szolgáltatók az Adatkezelő megbízásából, annak utasításai szerint
+kezelhetik az adatokat:
+
+- Tárhelyszolgáltató: [név, székhely] – szerver és adatbázis üzemeltetése
+  (az adatok tárolási helye: [ország, EU-n belül])
+- E-mail küldő szolgáltató: [név, székhely] – rendszerüzenetek küldése
+- [egyéb, ha van]
+
+Az adószám ellenőrzése során az adószámot a Nemzeti Adó- és Vámhivatal
+(NAV) Online Számla rendszerének lekérdező szolgáltatásához továbbítjuk.
+
+A könyvelő és a hozzá rendelt vállalkozó a közös feladataikhoz kapcsolódó
+adatokat egymás számára láthatják.
+
+Hatósági megkeresés esetén (pl. bíróság, rendőrség) jogszabályi
+kötelezettség alapján adatot továbbíthatunk.
+
+Az adatokat az Európai Unión kívülre nem továbbítjuk.
+
+======================================================================
+6. ADATBIZTONSÁG
+======================================================================
+
+- Az adatforgalom titkosított (HTTPS) kapcsolaton keresztül történik.
+- A jelszavakat kizárólag hash-elt formában tároljuk.
+- Az adatokhoz kizárólag az arra jogosult felhasználók és munkatársak
+  férnek hozzá, szerepkör alapú jogosultságkezeléssel.
+- Az adatbázisról rendszeres biztonsági mentés készül; a mentésekből a
+  törölt adatok legkésőbb [30] napon belül kikerülnek.
+
+Adatvédelmi incidens esetén az Adatkezelő a GDPR 33–34. cikke szerint jár el.
+
+======================================================================
+7. AZ ÉRINTETT JOGAI
+======================================================================
+
+A felhasználó az [adatvedelem@...] címen az alábbi jogokat gyakorolhatja:
+
+- Hozzáférés (GDPR 15. cikk): tájékoztatást kérhet arról, milyen adatait
+  kezeljük, és másolatot kérhet azokról.
+- Helyesbítés (16. cikk): kérheti a pontatlan adatai javítását.
+- Törlés (17. cikk): kérheti adatai törlését. A fiók a platformon belül is
+  törölhető.
+- Az adatkezelés korlátozása (18. cikk).
+- Adathordozhatóság (20. cikk): a szerződés alapján kezelt adatait
+  géppel olvasható formában megkaphatja.
+- Tiltakozás (21. cikk): a jogos érdeken alapuló adatkezelés (3.2. és 3.4.
+  pont) ellen bármikor tiltakozhat. Ilyenkor az adatkezelést megszüntetjük,
+  kivéve, ha kényszerítő erejű jogos ok indokolja annak folytatását.
+  Az adószám-ellenőrzés elleni tiltakozás esetén a vállalkozói fiók nem
+  tartható fenn.
+
+A kérelmekre indokolatlan késedelem nélkül, legfeljebb 1 hónapon belül
+válaszolunk. Ez a határidő indokolt esetben további 2 hónappal
+meghosszabbítható, amiről tájékoztatjuk a kérelmezőt.
+
+======================================================================
+8. JOGORVOSLAT
+======================================================================
+
+Ha úgy érzed, hogy adataid kezelése jogszabálysértő, kérjük, először
+fordulj hozzánk az [adatvedelem@...] címen.
+
+Panaszt tehetsz a Nemzeti Adatvédelmi és Információszabadság Hatóságnál:
+  Nemzeti Adatvédelmi és Információszabadság Hatóság (NAIH)
+  Cím:          1055 Budapest, Falk Miksa utca 9–11.
+  Postacím:     1363 Budapest, Pf. 9.
+  E-mail:       ugyfelszolgalat@naih.hu
+  Honlap:       www.naih.hu
+
+Jogaid megsértése esetén bírósághoz is fordulhatsz. A per – választásod
+szerint – a lakóhelyed vagy tartózkodási helyed szerint illetékes
+törvényszék előtt is megindítható.
+
+======================================================================
+9. A TÁJÉKOZTATÓ MÓDOSÍTÁSA
+======================================================================
+
+Az Adatkezelő jogosult a tájékoztatót módosítani. A lényeges változásokról
+a felhasználókat e-mailben vagy a platformon keresztül, a módosítás
+hatálybalépése előtt értesítjük.

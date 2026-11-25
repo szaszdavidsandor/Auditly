@@ -19,6 +19,7 @@ export class RoleSelector {
   readonly role = model<UserRole>('accountant');
   readonly disabled = input<boolean>(false);
   readonly name = input<string>('role');
+  readonly legend = input<string>('Válassz szerepkört');
 
   protected readonly options: readonly RoleOption[] = [
     { value: 'accountant', label: 'Könyvelő', icon: 'accountant' },

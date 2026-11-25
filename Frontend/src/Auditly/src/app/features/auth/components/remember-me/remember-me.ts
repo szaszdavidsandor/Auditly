@@ -18,7 +18,7 @@ import { Icon } from '../../../../shared/icon/icon';
       <span class="remember__box" aria-hidden="true">
         <app-icon name="check" [size]="11" [strokeWidth]="3" />
       </span>
-      <span class="remember__label">Emlékezz rám</span>
+      <span class="remember__label"><ng-content>Emlékezz rám</ng-content></span>
     </label>
   `,
   styleUrl: './remember-me.css',

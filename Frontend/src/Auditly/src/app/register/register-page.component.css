@@ -1,0 +1,19 @@
+.register-page {
+  max-width: 360px;
+}
+
+.terms-error {
+  font-size: 11px;
+  color: var(--color-error);
+}
+
+.form__alert--info {
+  color: var(--color-primary-text);
+  background: rgba(52, 124, 242, 0.1);
+  border-color: rgba(52, 124, 242, 0.4);
+}
+
+.register-page__footer {
+  font-size: 10.5px;
+  color: var(--color-text-faint);
+}

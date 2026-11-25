@@ -1,0 +1,90 @@
+<app-auth-background>
+  <div class="register-page w-100 m-auto">
+    <section class="card" aria-labelledby="register-title">
+      <header class="card__header">
+        <div class="brand">
+          <app-icon class="brand__logo" name="layers" [size]="22" [strokeWidth]="2" />
+          <h1 id="register-title" class="brand__name">Auditly</h1>
+        </div>
+        <p class="card__subtitle">Hozd létre az új fiókodat</p>
+      </header>
+
+      <form class="form" novalidate (submit)="onSubmit($event)">
+        <app-role-selector name="register-role" legend="Regisztráció típusa" [(role)]="role" />
+
+        <app-input-field
+          fieldId="register-name"
+          label="Teljes név / Cégnév"
+          icon="user"
+          placeholder="Kovács Péter"
+          autocomplete="name"
+          [error]="error('name')"
+          [(value)]="name"
+          (blurred)="touch('name')"
+        />
+
+        <app-input-field
+          fieldId="register-email"
+          label="Email cím"
+          type="email"
+          icon="mail"
+          placeholder="kovacs.peter@auditly.hu"
+          autocomplete="email"
+          inputMode="email"
+          [error]="error('email')"
+          [(value)]="email"
+          (blurred)="touch('email')"
+        />
+
+        <app-password-field
+          fieldId="register-password"
+          placeholder="••••••••••••"
+          autocomplete="new-password"
+          [error]="error('password')"
+          [(value)]="password"
+          (blurred)="touch('password')"
+        />
+
+        <app-password-field
+          fieldId="register-confirm"
+          label="Jelszó megerősítése"
+          placeholder="••••••••••••"
+          autocomplete="new-password"
+          [error]="error('confirm')"
+          [(value)]="passwordConfirm"
+          (blurred)="touch('confirm')"
+        />
+
+        <div>
+          <app-remember-me fieldId="register-terms" [(checked)]="termsAccepted">
+            Elfogadom az
+            <a class="form__link" routerLink="/terms" target="_blank" rel="noopener">
+              Általános Szerződési Feltételeket
+            </a>
+          </app-remember-me>
+
+          @if (error('terms'); as termsError) {
+            <p class="terms-error d-flex align-items-center gap-1 mt-2" role="alert">
+              <app-icon name="alert" [size]="13" [strokeWidth]="2" />
+              <span>{{ termsError }}</span>
+            </p>
+          }
+        </div>
+
+        @if (notice()) {
+          <p class="form__alert form__alert--info" role="status">
+            <app-icon name="alert" [size]="15" [strokeWidth]="2" />
+            <span>{{ notice() }}</span>
+          </p>
+        }
+
+        <app-login-button label="Fiók létrehozása" />
+      </form>
+
+      <p class="card__footer register-page__footer text-center">
+        Már van fiókod?
+        <a class="form__link" routerLink="/login">Bejelentkezés</a>
+      </p>
+    </section>
+  </div>
+</app-auth-background>

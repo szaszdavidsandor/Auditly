@@ -26,11 +26,16 @@ export const routes: Routes = [
   {
     path: 'register',
     title: 'Regisztráció | Auditly',
+    loadComponent: () =>
+      import('./register/register-page.component').then((m) => m.RegisterPageComponent),
+  },
+  {
+    path: 'terms',
+    title: 'Általános Szerződési Feltételek | Auditly',
     loadComponent: loadPlaceholder,
     data: {
-      heading: 'Regisztráció',
-      description:
-        'Az önálló regisztráció hamarosan elérhető lesz. Jelenleg a fiókokat a rendszergazda hozza létre.',
+      heading: 'Általános Szerződési Feltételek',
+      description: 'Az ÁSZF dokumentum hamarosan itt lesz elérhető.',
     },
   },
   {
